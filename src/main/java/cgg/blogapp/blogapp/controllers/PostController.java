@@ -20,10 +20,12 @@ import org.springframework.web.multipart.MultipartFile;
 import cgg.blogapp.blogapp.entities.PostDTO;
 import cgg.blogapp.blogapp.services.FileService;
 import cgg.blogapp.blogapp.services.PostService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/posts")
+@SecurityRequirement(name = "din_scheme")
 public class PostController {
     @Autowired
     private FileService fileService;

@@ -24,7 +24,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @SecurityRequirement(name = "din_scheme")
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 public class UserController {
     @Autowired
     private BCryptPasswordEncoder b1;

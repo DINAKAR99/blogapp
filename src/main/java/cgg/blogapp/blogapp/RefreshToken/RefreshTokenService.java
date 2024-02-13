@@ -8,6 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import cgg.blogapp.blogapp.entities.User;
+import cgg.blogapp.blogapp.exceptions.RefreshTokenExpired;
 import cgg.blogapp.blogapp.repos.UserRepo;
 
 @Service
@@ -22,7 +23,7 @@ public class RefreshTokenService {
         RefreshToken token = null;
         token = RefreshToken.builder().rtoken(UUID.randomUUID().toString())
                 .u1(userRepo.findByName(username))
-                .expiry(Instant.now().plusMillis(3 * 60 * 1000)).build();
+                .expiry(Instant.now().plusMillis(300 * 60 * 1000)).build();
         try {
             refreshTokenRepo.save(token);
 
@@ -54,8 +55,9 @@ public class RefreshTokenService {
         if (token.getExpiry().compareTo(Instant.now()) < 0) {
             System.out.println("refresh token is deletimg....");
             refreshTokenRepo.delete(token);
-            throw new RuntimeException(
-                    token.getRtoken() + " Refresh token was expired. Please make a new signin request");
+
+            // throw refresh token expired exception upon encountering expired one
+            throw new RefreshTokenExpired();
         }
         return token;
     }

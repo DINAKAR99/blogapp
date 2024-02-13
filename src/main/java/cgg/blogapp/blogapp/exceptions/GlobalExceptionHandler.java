@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -20,6 +21,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ApiResponse> handleresNotFound(ResourceNotFoundException r1) {
         return new ResponseEntity<ApiResponse>(new ApiResponse(r1.getMessage(), false), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handlerRefreshTokenExpired(RefreshTokenExpired rf) {
+
+        return new ResponseEntity<>("refresh token expired", HttpStatus.NOT_FOUND);
+
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

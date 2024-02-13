@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import cgg.blogapp.blogapp.entities.CommentDTO;
 import cgg.blogapp.blogapp.payload.ApiResponse;
 import cgg.blogapp.blogapp.services.CommentService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1/")
+@SecurityRequirement(name = "din_scheme")
 public class CommentController {
     @Autowired
     private CommentService commentService;

@@ -2,6 +2,7 @@ package cgg.blogapp.blogapp.controllers;
 
 import cgg.blogapp.blogapp.entities.CategoryDTO;
 import cgg.blogapp.blogapp.services.CategoryService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/categories")
+@SecurityRequirement(name = "din_scheme")
 public class CategoryController {
 
   @Autowired

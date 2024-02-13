@@ -1,8 +1,11 @@
 package cgg.blogapp.blogapp.config;
 
+import java.net.http.HttpRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -16,6 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import cgg.blogapp.blogapp.jwt.JwtAuthFilter;
+import cgg.blogapp.blogapp.jwt.JwtEntryPoint;
 import cgg.blogapp.blogapp.services.CustomUserDetailsService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -25,7 +29,7 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 
 @Configuration
 @OpenAPIDefinition(info = @Info(title = "din api", description = "this is din api docs", version = "10.1", license = @License(name = "din license", url = "www.din.com")))
-@SecurityScheme(name = "din_scheme", type = SecuritySchemeType.HTTP)
+@SecurityScheme(name = "din_scheme", type = SecuritySchemeType.HTTP, bearerFormat = "JWT", scheme = "bearer")
 @EnableWebSecurity
 
 public class SecurityConfig {
@@ -33,15 +37,20 @@ public class SecurityConfig {
     public CustomUserDetailsService service;
     @Autowired
     public JwtAuthFilter jwtAuthFilter;
+    @Autowired
+    public JwtEntryPoint jwtEntryPoint;
 
-    public static final String[] PUBLIC_URLS = { "/api/v1/auth/**" };
+    public static final String[] PUBLIC_URLS = { "/api/v1/auth/**", "/" };
 
     @Bean
     SecurityFilterChain getSecurtyFilterChain(HttpSecurity hs) throws Exception {
         hs.csrf(s -> s.disable())
                 .authorizeHttpRequests(
-                        req -> req.requestMatchers("/admin/").hasRole("ADMIN").requestMatchers("/api/v1/posts/")
-                                .hasRole("USER").requestMatchers("/**", "/authorize").permitAll())
+                        req -> req.requestMatchers("/admin/**").hasRole("ADMIN").requestMatchers("/api/v1/**")
+                                .hasRole("USER").requestMatchers(PUBLIC_URLS)
+                                .permitAll().requestMatchers(HttpMethod.GET).permitAll().anyRequest().authenticated())
+                .exceptionHandling(e -> e.authenticationEntryPoint(
+                        jwtEntryPoint))
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(
                         authProvider())

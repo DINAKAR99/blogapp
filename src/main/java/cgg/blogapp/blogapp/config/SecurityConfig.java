@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -40,15 +41,17 @@ public class SecurityConfig {
     @Autowired
     public JwtEntryPoint jwtEntryPoint;
 
-    public static final String[] PUBLIC_URLS = { "/api/v1/auth/**", "/" };
+    public static final String[] PUBLIC_URLS = { "/api/v1/auth/**", "/api/v1/users/register", "/" };
 
     @Bean
     SecurityFilterChain getSecurtyFilterChain(HttpSecurity hs) throws Exception {
-        hs.csrf(s -> s.disable())
+        hs.csrf(s -> s.disable()).cors(
+                Customizer.withDefaults())
                 .authorizeHttpRequests(
-                        req -> req.requestMatchers("/admin/**").hasRole("ADMIN").requestMatchers("/api/v1/**")
-                                .hasRole("USER").requestMatchers(PUBLIC_URLS)
-                                .permitAll().requestMatchers(HttpMethod.GET).permitAll().anyRequest().authenticated())
+                        req -> req.requestMatchers(PUBLIC_URLS)
+                                .permitAll().requestMatchers("/admin/**").hasRole("ADMIN").requestMatchers("/api/v1/**")
+                                .hasRole("USER").requestMatchers(HttpMethod.GET).permitAll().anyRequest()
+                                .authenticated())
                 .exceptionHandling(e -> e.authenticationEntryPoint(
                         jwtEntryPoint))
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

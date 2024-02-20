@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ import jakarta.validation.Valid;
 @RestController
 @SecurityRequirement(name = "din_scheme")
 @RequestMapping("/api/v1/users")
+@CrossOrigin("*")
 public class UserController {
     @Autowired
     private BCryptPasswordEncoder b1;
@@ -37,7 +39,7 @@ public class UserController {
 
     }
 
-    @PostMapping("/")
+    @PostMapping("/register")
     public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) {
 
         String encode = b1.encode(userDTO.getPassword());

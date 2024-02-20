@@ -3,6 +3,7 @@ package cgg.blogapp.blogapp.services;
 import java.util.List;
 
 import cgg.blogapp.blogapp.entities.PostDTO;
+import cgg.blogapp.blogapp.entities.User;
 
 public interface PostService {
     public PostDTO createPost(PostDTO PostDTO);
@@ -14,6 +15,8 @@ public interface PostService {
     public PostDTO getPost(int PostId);
 
     public List<PostDTO> getAllPosts();
+
+    public List<PostDTO> getAllPostsByUser(User user);
 
     PostDTO updatePost(PostDTO PostDTO, Integer postId);
 

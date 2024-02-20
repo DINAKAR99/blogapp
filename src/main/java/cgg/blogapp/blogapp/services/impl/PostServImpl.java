@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import cgg.blogapp.blogapp.entities.Post;
 import cgg.blogapp.blogapp.entities.PostDTO;
+import cgg.blogapp.blogapp.entities.User;
 import cgg.blogapp.blogapp.exceptions.ResourceNotFoundException;
 import cgg.blogapp.blogapp.repos.PostRepo;
 import cgg.blogapp.blogapp.services.PostService;
@@ -69,6 +70,16 @@ public class PostServImpl implements PostService {
         return PostDTOs;
     }
 
+    @Override
+    public List<PostDTO> getAllPostsByUser(User user) {
+        List<Post> allCategories = postRepository.findByUser(user);
+        List<PostDTO> PostDTOs = allCategories
+                .stream()
+                .map(Post -> postToPostDto(Post))
+                .collect(Collectors.toList());
+        return PostDTOs;
+    }
+
     public Post postDtoToPost(PostDTO PostDTO) {
         return m1.map(PostDTO, Post.class);
     }
@@ -95,4 +106,5 @@ public class PostServImpl implements PostService {
                 .collect(Collectors.toList());
         return PostDTOs;
     }
+
 }

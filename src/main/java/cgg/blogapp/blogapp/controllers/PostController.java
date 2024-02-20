@@ -3,10 +3,13 @@ package cgg.blogapp.blogapp.controllers;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.catalina.mapper.Mapper;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,14 +21,18 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import cgg.blogapp.blogapp.entities.PostDTO;
+import cgg.blogapp.blogapp.entities.User;
+import cgg.blogapp.blogapp.entities.UserDTO;
 import cgg.blogapp.blogapp.services.FileService;
 import cgg.blogapp.blogapp.services.PostService;
+import cgg.blogapp.blogapp.services.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/posts")
 @SecurityRequirement(name = "din_scheme")
+@CrossOrigin("*")
 public class PostController {
     @Autowired
     private FileService fileService;
@@ -34,6 +41,10 @@ public class PostController {
 
     @Autowired
     public PostService postService;
+    @Autowired
+    public UserService userService;
+    @Autowired
+    public ModelMapper mapper;
 
     @PostMapping("/")
     public ResponseEntity<PostDTO> createPost(
@@ -52,6 +63,17 @@ public class PostController {
     @GetMapping("/")
     public ResponseEntity<List<PostDTO>> getAllPosts() {
         List<PostDTO> allPosts = postService.getAllPosts();
+        return new ResponseEntity<List<PostDTO>>(allPosts, HttpStatus.OK);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<PostDTO>> getAllPostsByUser(@PathVariable("userId") Integer userId) {
+
+        UserDTO userById = userService.getUserById(userId);
+
+        User map = mapper.map(userById, User.class);
+
+        List<PostDTO> allPosts = postService.getAllPostsByUser(map);
         return new ResponseEntity<List<PostDTO>>(allPosts, HttpStatus.OK);
     }
 
